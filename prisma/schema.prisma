@@ -1,0 +1,304 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      UserRole @default(FIELD_OPERATOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  ownedBusiness Business? @relation("BusinessOwner")
+  businessId    String?
+  business      Business? @relation("BusinessEmployees", fields: [businessId], references: [id])
+  
+  serviceCalls ServiceCall[]
+  quotes       Quote[]
+  invoices     Invoice[]
+
+  @@map("users")
+}
+
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  address     String?
+  phone       String?
+  email       String?
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  ownerId    String    @unique
+  owner      User      @relation("BusinessOwner", fields: [ownerId], references: [id])
+  employees  User[]    @relation("BusinessEmployees")
+  
+  customers Customer[]
+  serviceCalls ServiceCall[]
+  quotes   Quote[]
+  invoices Invoice[]
+
+  @@map("businesses")
+}
+
+model Customer {
+  id          String        @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  address     String?
+  type        CustomerType
+  businessId  String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  business     Business       @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  serviceCalls ServiceCall[]
+  quotes       Quote[]
+  invoices     Invoice[]
+
+  @@map("customers")
+}
+
+model ServiceCall {
+  id          String           @id @default(cuid())
+  title       String
+  description String?
+  status      ServiceCallStatus @default(PENDING)
+  scheduledAt DateTime?
+  completedAt DateTime?
+  address     String?
+  notes       String?
+  
+  // Relations
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  assignedToId String?
+  assignedTo  User?    @relation(fields: [assignedToId], references: [id])
+  
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  quoteId String?
+  quote   Quote?   @relation(fields: [quoteId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("service_calls")
+}
+
+model Quote {
+  id          String      @id @default(cuid())
+  quoteNumber String      @unique
+  title       String
+  description String?
+  status      QuoteStatus @default(DRAFT)
+  
+  // Customer and Business
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  createdById String
+  createdBy  User    @relation(fields: [createdById], references: [id])
+  
+  // Financial details
+  subtotal    Float
+  taxRate     Float    @default(0.15)
+  taxAmount   Float
+  total       Float
+  depositRequired Float @default(0)
+  depositPaid   Float  @default(0)
+  
+  // Dates
+  validUntil  DateTime?
+  acceptedAt  DateTime?
+  completedAt DateTime?
+  
+  // Relations
+  serviceCalls ServiceCall[]
+  items       QuoteItem[]
+  invoice     Invoice?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("quotes")
+}
+
+model QuoteItem {
+  id          String   @id @default(cuid())
+  description String
+  quantity    Float
+  unitPrice   Float
+  totalPrice  Float
+  
+  // Estimated vs Actual
+  estimatedQuantity Float?
+  estimatedUnitPrice Float?
+  
+  quoteId String
+  quote   Quote @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("quote_items")
+}
+
+model Invoice {
+  id          String       @id @default(cuid())
+  invoiceNumber String     @unique
+  title       String
+  description String?
+  status      InvoiceStatus @default(DRAFT)
+  
+  // Customer and Business
+  customerId  String
+  customer    Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  
+  businessId String
+  business   Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  
+  createdById String
+  createdBy  User    @relation(fields: [createdById], references: [id])
+  
+  // Quote reference
+  quoteId String?  @unique
+  quote   Quote?   @relation(fields: [quoteId], references: [id])
+  
+  // Financial details
+  subtotal    Float
+  taxRate     Float    @default(0.15)
+  taxAmount   Float
+  total       Float
+  depositPaid Float    @default(0)
+  balanceDue  Float
+  
+  // Actual costs from quote
+  actualTravelCost     Float @default(0)
+  actualLabourHours    Float @default(0)
+  actualLabourRate     Float @default(0)
+  actualPartsCost      Float @default(0)
+  
+  // Dates
+  issuedAt    DateTime?
+  dueAt       DateTime?
+  paidAt      DateTime?
+  
+  // Relations
+  items       InvoiceItem[]
+  payments    Payment[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("invoices")
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  description String
+  quantity    Float
+  unitPrice   Float
+  totalPrice  Float
+  
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("invoice_items")
+}
+
+model Payment {
+  id          String       @id @default(cuid())
+  amount      Float
+  method      PaymentMethod
+  reference   String?
+  status      PaymentStatus @default(PENDING)
+  notes       String?
+  
+  invoiceId String
+  invoice   Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("payments")
+}
+
+// Enums
+enum UserRole {
+  SUPER_ADMIN
+  FIELD_OPERATOR
+}
+
+enum CustomerType {
+  RESIDENTIAL
+  COMMERCIAL
+  INDUSTRIAL
+}
+
+enum ServiceCallStatus {
+  PENDING
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  CONVERTED_TO_INVOICE
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PARTIALLY_PAID
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CASH
+  BANK_TRANSFER
+  CREDIT_CARD
+  MOBILE_MONEY
+  CHEQUE
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
