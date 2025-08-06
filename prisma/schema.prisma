@@ -1,8 +1,8 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// Hierdie is jou Prisma skema lêer,
+// leer meer daarvan in die docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Soek jy maniere om jou navrae te versnel, of maklik te skaal met jou serverless of edge funksies?
+// Probeer Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -22,7 +22,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations
+  // Verwantskappe
   ownedBusiness Business? @relation("BusinessOwner")
   businessId    String?
   business      Business? @relation("BusinessEmployees", fields: [businessId], references: [id])
@@ -44,7 +44,7 @@ model Business {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
+  // Verwantskappe
   ownerId    String    @unique
   owner      User      @relation("BusinessOwner", fields: [ownerId], references: [id])
   employees  User[]    @relation("BusinessEmployees")

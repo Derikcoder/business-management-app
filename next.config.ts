@@ -2,23 +2,23 @@ import type { NextConfig } from "next";
 import withPWA from 'next-pwa';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  /* konfigurasie opsies hier */
   typescript: {
     ignoreBuildErrors: true,
   },
-  // 禁用 Next.js 热重载，由 nodemon 处理重编译
+  // Deaktiveer Next.js warm herlaai, nodemon hanteer hersamestelling
   reactStrictMode: false,
   webpack: (config, { dev }) => {
     if (dev) {
-      // 禁用 webpack 的热模块替换
+      // Deaktiveer webpack se warm module vervanging
       config.watchOptions = {
-        ignored: ['**/*'], // 忽略所有文件变化
+        ignored: ['**/*'], // Ignoreer alle lêer veranderinge
       };
     }
     return config;
   },
   eslint: {
-    // 构建时忽略ESLint错误
+    // Ignoreer ESLint foute tydens bou
     ignoreDuringBuilds: true,
   },
 };
@@ -27,7 +27,7 @@ const pwaConfig = withPWA({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development', // Disable PWA in development
+  disable: process.env.NODE_ENV === 'development', // Deaktiveer PWA in ontwikkeling
 })(nextConfig);
 
 export default pwaConfig;

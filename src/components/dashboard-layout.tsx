@@ -43,12 +43,12 @@ interface DashboardLayoutProps {
   children: React.ReactNode
 }
 
-// Function to generate breadcrumbs from pathname
+// Funksie om broodkrummels van padnaam te genereer
 const generateBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
   const segments = pathname.split('/').filter(Boolean)
   const breadcrumbs: BreadcrumbItem[] = []
   
-  // Always start with Dashboard
+  // Begin altyd met Dashboard
   breadcrumbs.push({ name: 'Dashboard', href: '/dashboard' })
   
   if (segments.length > 1) {
@@ -58,7 +58,7 @@ const generateBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
     pathSegments.forEach((segment, index) => {
       currentPath += `/${segment}`
       
-      // Map segment names to readable labels
+      // Karteer segment name na leesbare etikette
       const labelMap: { [key: string]: string } = {
         'customers': 'Customers',
         'quotes': 'Quotes',
@@ -72,7 +72,7 @@ const generateBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
       
       const label = labelMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1)
       
-      // Don't add link for the last segment (current page)
+      // Moenie skakel byvoeg vir die laaste segment nie (huidige bladsy)
       if (index === pathSegments.length - 1) {
         breadcrumbs.push({ name: label, href: null })
       } else {
@@ -129,11 +129,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const pathname = usePathname()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
-  // Generate breadcrumbs
+  // Genereer broodkrummels
   const breadcrumbs = generateBreadcrumbs(pathname)
   const showBackButton = breadcrumbs.length > 1
   
-  // Back button handler
+  // Terug knoppie hanteerder
   const handleBack = () => {
     if (breadcrumbs.length > 1) {
       const previousBreadcrumb = breadcrumbs[breadcrumbs.length - 2]

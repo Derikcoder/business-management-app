@@ -48,7 +48,7 @@ export async function PATCH(
     if (depositPaid !== undefined) {
       updateData.depositPaid = depositPaid
       
-      // If deposit is paid and status is still SENT, update to ACCEPTED
+      // As deposito betaal is en status is steeds SENT, werk by na ACCEPTED
       if (depositPaid > 0 && quote.status === QuoteStatus.SENT) {
         updateData.status = QuoteStatus.ACCEPTED
         updateData.acceptedAt = new Date()

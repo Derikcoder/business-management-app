@@ -61,19 +61,19 @@ export async function POST(
       )
     }
 
-    // Create payment record
+    // Skep betaling rekord
     const payment = await db.payment.create({
       data: {
         amount,
         method,
         reference,
         notes,
-        invoiceId: null, // Will be linked when invoice is created
+        invoiceId: null, // Sal gekoppel word wanneer faktuur geskep word
         status: PaymentStatus.COMPLETED,
       },
     })
 
-    // Update quote deposit paid amount
+    // Werk kwotasie deposito betaalde bedrag by
     const updatedQuote = await db.quote.update({
       where: { id: quoteId },
       data: {

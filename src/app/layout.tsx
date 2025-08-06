@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { Providers } from "@/components/providers";
@@ -42,6 +43,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
+        {/* React DevTools Skrip - Net in ontwikkeling */}
+        {process.env.NODE_ENV === 'development' && (
+          <Script
+            src="http://localhost:8097"
+            strategy="beforeInteractive"
+          />
+        )}
+        
         <Providers>
           {children}
           <Toaster />

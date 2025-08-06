@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { db } from "@/lib/db"
 
-// GET - Fetch business settings
+// GET - Haal besigheids instellings
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// PUT - Update business settings
+// PUT - Werk besigheids instellings by
 export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)

@@ -140,7 +140,7 @@ export async function POST(request: NextRequest) {
     let customerId = ""
     let businessId = session.user.businessId
 
-    // If quote is provided, validate and get customer info
+    // As kwotasie verskaf word, valideer en kry kliënt inligting
     if (quoteId) {
       const quote = await db.quote.findFirst({
         where: {
@@ -230,7 +230,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // If created from quote, update quote status
+    // As geskep van kwotasie, werk kwotasie status by
     if (quoteId) {
       await db.quote.update({
         where: { id: quoteId },
