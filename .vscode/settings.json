@@ -1,3 +1,22 @@
 {
-    "liveServer.settings.port": 5501
+    "liveServer.settings.port": 5501,
+    "tailwindCSS.includeLanguages": {
+        "typescript": "typescript",
+        "typescriptreact": "typescriptreact"
+    },
+    "tailwindCSS.experimental.classRegex": [
+        ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+        ["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+    ],
+    "css.validate": false,
+    "less.validate": false,
+    "scss.validate": false,
+    "tailwindCSS.classAttributes": [
+        "class",
+        "className",
+        "ngClass"
+    ],
+    "editor.quickSuggestions": {
+        "strings": true
+    }
 }

@@ -26,14 +26,27 @@ import {
 } from "lucide-react"
 import { UserRole } from "@prisma/client"
 
+// Define types for navigation and breadcrumbs
+interface NavigationItem {
+  name: string
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  adminOnly?: boolean
+}
+
+interface BreadcrumbItem {
+  name: string
+  href: string | null
+}
+
 interface DashboardLayoutProps {
   children: React.ReactNode
 }
 
 // Function to generate breadcrumbs from pathname
-const generateBreadcrumbs = (pathname: string) => {
+const generateBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
   const segments = pathname.split('/').filter(Boolean)
-  const breadcrumbs = []
+  const breadcrumbs: BreadcrumbItem[] = []
   
   // Always start with Dashboard
   breadcrumbs.push({ name: 'Dashboard', href: '/dashboard' })
@@ -71,7 +84,7 @@ const generateBreadcrumbs = (pathname: string) => {
   return breadcrumbs
 }
 
-const navigation = [
+const navigation: NavigationItem[] = [
   {
     name: "Dashboard",
     href: "/dashboard",
